@@ -64,7 +64,7 @@ app.get('/authors/:id', (req, res) => {
             status: 400,
             message: 'id not valid'
         }
-        res.send(response);
+        res.status(400).send(response);
 
     }
     try {
