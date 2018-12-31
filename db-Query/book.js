@@ -23,7 +23,7 @@ var validateBook = (book) => {
     publishYear: Joi.number(),
     pagesNumber: Joi.number(),
     image: Joi.string().min(3),
-    //id: Joi.string().required()
+    
 
   };
 
@@ -76,20 +76,22 @@ var getBook = (id) => {
 
 // add book 
 var addBook = (book) => {
-  book.id = uuidv4();
   const {
     error
   } = validateBook(book);
   if (error) {
     return ('validation error',error)
   }
+  book.id = uuidv4();
 
   var data = fetchData();
   
  
   data.books.push(book);
-  saveData(data)
+  saveData(data);
+  console.log(book);
   return book;
+  
 
 };
 
