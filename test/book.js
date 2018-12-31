@@ -104,7 +104,7 @@ describe('POST /books/addBooks/', () => {
             .send({
                 "book": {
                     "title": "inforamtion system",
-                    "author": "mmmmmm",
+                    "author": "mmmmmmf",
                     "description": "Mollitia consectetur rerum veniam et. Atque dicta delectus sed. Est ut cum neque suscipit aut asperiores qui.  voluptatibus. Provident aliquam labore dicta impedit esse neque. Aperiam dignissimos voluptatem dolores tenetur.",
                     "isbn": "1Kgggggggggg",
                     "publishYear": 44,
