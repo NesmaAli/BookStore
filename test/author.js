@@ -1,9 +1,10 @@
 const expect = require('expect');
+const {app} = require('../server');
+
 const request = require('supertest');
 
-const {app} = require('../route/author');
 
-describe('POST /addAuthor/', () => {
+describe('POST /authors/addAuthor/', () => {
 
   it('should not create author with invalid body data', (done) => {
     var author2 = { "author":
@@ -15,7 +16,7 @@ describe('POST /addAuthor/', () => {
     }
   };
     request(app)
-      .post('/addAuthor/')
+      .post('/authors/addAuthor/')
       .send(author2)
       .send({
         "author":{
@@ -37,7 +38,7 @@ describe('POST /addAuthor/', () => {
     it('should create a new author', (done) => {
      
       request(app)
-        .post('/addAuthor/')
+        .post('/authors/addAuthor/')
         .send({ "author":
         {
             "name": "Anaaaaaaatest10",
@@ -69,10 +70,10 @@ describe('POST /addAuthor/', () => {
   });
   //// get test
 
-  describe('POST /authors', () => {
+  describe('POST /authors/', () => {
     it('should get all books', (done) => {
       request(app)
-        .post('/authors')
+        .post('/authors/')
         .expect(200)
         .expect((res) => {
           expect(res.body.message.length).toBeGreaterThan(0);
@@ -90,7 +91,7 @@ describe('POST /addAuthor/', () => {
         }
       }
       request(app)
-        .post('/authors')
+        .post('/authors/')
         .send(order)
         .expect(200)
         .expect((res) => {
@@ -107,7 +108,7 @@ describe('POST /addAuthor/', () => {
         }
       }
       request(app)
-        .post('/authors')
+        .post('/authors/')
         .send(filter)
         .expect(200)
         .expect((res) => {
@@ -153,11 +154,11 @@ describe('POST /addAuthor/', () => {
 
   // delete TEST
 
-  describe('DELETE /author/:name', () => {
+  describe('DELETE /authors/author/:name', () => {
     it('should remove a author', (done) => {
   
       request(app)
-        .delete(`/author/Anaaaaaaatest3`)
+        .delete(`/authors/author/Anaaaaaaatest10`)
         .expect(200)
         .expect((res) => {
           expect(res.body.message ).toBe("author is deleted sucsessfuly");
@@ -169,12 +170,13 @@ describe('POST /addAuthor/', () => {
   
           
         });
+        done();
     });
   
     it(' no author with this name ', (done) => {
   
       request(app)
-        .delete(`/author/mmmm`)
+        .delete(`/authors/author/mmmm`)
         .expect(200)
         .expect((res)=>{
           expect(res.body.message).toBe("no author with this name");
@@ -184,7 +186,7 @@ describe('POST /addAuthor/', () => {
   
     it("should return can't delete this auther ", (done) => {
       request(app)
-        .delete('/author/Ahmad Stanton')
+        .delete('/authors/author/Glennie Bailey')
         .expect(200)
         .expect((res)=>{
           expect(res.body.message).toBe("can't delete this auther he has abook");
@@ -193,11 +195,11 @@ describe('POST /addAuthor/', () => {
     });
   });
   
-  describe('PATCH /updateAuthor/:id', () => {
+  describe('PATCH/authors/updateAuthor/:id', () => {
     it('should update the AUTHOR', (done) => {
   
       request(app)
-        .patch(`/updateAuthor/8dec0840-5ab5-4e07-8452-a0c787fa8805`)
+        .patch(`/authors/updateAuthor/8dec0840-5ab5-4e07-8452-a0c787fa8805`)
         .send({
           "name": "UPDATE Conroy",
           "jobTitle": "Dynamic Branding Analyst",
@@ -215,7 +217,7 @@ describe('POST /addAuthor/', () => {
      
   
       request(app)
-        .patch(`/updateAuthor/8dec0840-5ab5-4e07-8452-a0c787fa8805`)
+        .patch(`/authors/updateAuthor/8dec0840-5ab5-4e07-8452-a0c787fa8805`)
         .send({
           "name": "oy",
           "jobTitle": "Dynamic Branding Analyst",

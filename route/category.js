@@ -1,8 +1,6 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 var validate = require('uuid-validate');
-const port = process.env.PORT || 3000;
-var app = express();
+var route = express.Router();
 var {
     getAll,
     getcategory,
@@ -13,11 +11,7 @@ var {
 } = require('../db-Query/category')
 let response = require('../errorObj');
 
-
-
-app.use(bodyParser.json());
-
-app.post('/categories', (req, res) => {
+route.post('/', (req, res) => {
 
     const all = getAll(req.body.options);
     if (all.length==0) {
@@ -25,7 +19,7 @@ app.post('/categories', (req, res) => {
             status: 200,
             message: "no data"
         }
-        res.send(response);
+       return res.send(response);
     }
     response = {
         status: 200,
@@ -45,7 +39,7 @@ app.post('/categories', (req, res) => {
     }
 });
 
-app.get('/categories/:id', (req, res) => {
+route.get('/:id', (req, res) => {
     var id = req.params.id;
     if (!id) {
         return res.status(404).send();
@@ -56,7 +50,7 @@ app.get('/categories/:id', (req, res) => {
             status: 400,
             message: 'id not valid'
         }
-        res.send(response);
+       return res.status(400).send(response);
     }
     try {
         var category = getcategory(id);
@@ -71,7 +65,7 @@ app.get('/categories/:id', (req, res) => {
             status: 200,
             message:category 
         }
-        res.send(response);
+       return res.send(response);
     } catch (error) {
         response = {
             status: 404,
@@ -82,7 +76,7 @@ app.get('/categories/:id', (req, res) => {
     }
 });
 
-app.delete('/category/:name', (req, res) => {
+route.delete('/category/:name', (req, res) => {
     var name = req.params.name;
 
     try {
@@ -113,6 +107,15 @@ app.delete('/category/:name', (req, res) => {
             return res.status(200).send(response);
 
         }
+        if (result == "can't delete this category ")
+        {
+            response = {
+                status: 200,
+                message:"can't delete this category "
+            }
+            return res.status(200).send(response);
+    
+        }
         else
         {
             response = {
@@ -135,7 +138,7 @@ app.delete('/category/:name', (req, res) => {
 });
 
 
-app.post('/addcategory', (req, res) => {
+route.post('/addcategory', (req, res) => {
     var category = req.body.category;
     const {
         error
@@ -168,7 +171,7 @@ app.post('/addcategory', (req, res) => {
 
 });
 
-app.patch('/updateCategory/:id', (req, res) => {
+route.patch('/:id', (req, res) => {
     var id = req.params.id;
 
     if (!validate(id)) {
@@ -176,6 +179,7 @@ app.patch('/updateCategory/:id', (req, res) => {
             status: 400,
             message:'id not valid'
         }
+        console.log(id);
         return res.status(400).send(response);
 
     }
@@ -205,7 +209,8 @@ app.patch('/updateCategory/:id', (req, res) => {
             status: 404,
             message:"category edit is failed"
         }
-        return res.status(404).send(response);
+
+        return res.status(404).send(response).writeHead(statusCode);
 
     }
     if (editCategory == 'The Category with the given ID was not found.')
@@ -217,6 +222,9 @@ app.patch('/updateCategory/:id', (req, res) => {
         return res.status(200).send(response);
 
     }
+   
+    
+    
         response = {
             status: 200,
             message:editCategory
@@ -224,10 +232,8 @@ app.patch('/updateCategory/:id', (req, res) => {
     return res.status(200).send(response);
 });
 
-app.listen(port, () => {
-    console.log(`Started up at port ${port}`);
-});
+
 
 module.exports = {
-    app
+    route
 };

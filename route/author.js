@@ -1,8 +1,7 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 var validate = require('uuid-validate');
-const port = process.env.PORT || 3000;
-var app = express();
+
+var route = express.Router();
 var {
     getAll,
     getAuthor,
@@ -15,9 +14,9 @@ let response = require('../errorObj');
 
 
 
-app.use(bodyParser.json());
 
-app.post('/authors', (req, res) => {
+
+route.post('/', (req, res) => {
 
 
 
@@ -47,7 +46,7 @@ app.post('/authors', (req, res) => {
     }
 });
 
-app.get('/authors/:id', (req, res) => {
+route.get('/:id', (req, res) => {
     var id = req.params.id;
     if (!id) {
         response = {
@@ -74,14 +73,14 @@ app.get('/authors/:id', (req, res) => {
                 status: 200,
                 message: "no data with this id"
             }
-            res.send(response);
+            return res.send(response);
 
         } else {
             response = {
                 status: 200,
                 message: author
             }
-            res.send(response);
+           return  res.send(response);
 
         }
 
@@ -98,7 +97,7 @@ app.get('/authors/:id', (req, res) => {
     }
 });
 
-app.delete('/author/:name', (req, res) => {
+route.delete('/author/:name', (req, res) => {
     var name = req.params.name;
 
     try {
@@ -161,7 +160,7 @@ app.delete('/author/:name', (req, res) => {
 });
 
 
-app.post('/addAuthor', (req, res) => {
+route.post('/addAuthor', (req, res) => {
     var author = req.body.author;
     const {
         error
@@ -192,7 +191,7 @@ app.post('/addAuthor', (req, res) => {
 
 });
 
-app.patch('/updateAuthor/:id', (req, res) => {
+route.patch('/updateAuthor/:id', (req, res) => {
     var id = req.params.id;
 
     if (!validate(id)) {
@@ -247,10 +246,7 @@ app.patch('/updateAuthor/:id', (req, res) => {
     return res.status(200).send(response);
 });
 
-app.listen(port, () => {
-    console.log(`Started up at port ${port}`);
-});
 
 module.exports = {
-    app
+    route
 };

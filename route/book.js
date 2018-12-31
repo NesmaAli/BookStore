@@ -2,9 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var validate = require('uuid-validate');
 
-var app = express();
+var route = express.Router();
 const port = process.env.PORT || 3000;
-var app = express();
 var {
     getAll,
     getBook,
@@ -19,9 +18,8 @@ let response = require('../errorObj');
 
 
 
-app.use(bodyParser.json());
 
-app.post('/books', (req, res) => {
+route.post('/', (req, res) => {
 
     try {
         const all = getAll(req.body.options);
@@ -50,7 +48,7 @@ app.post('/books', (req, res) => {
 
 });
 
-app.get('/books/:id', (req, res) => {
+route.get('/:id', (req, res) => {
     var id = req.params.id;
 
 
@@ -63,7 +61,7 @@ app.get('/books/:id', (req, res) => {
             status: 400,
             message: 'id not valid'
         }
-        res.send(response);
+        res.status(400).send(response);
     }
     try {
         var book = getBook(id);
@@ -92,7 +90,7 @@ app.get('/books/:id', (req, res) => {
 
 });
 
-app.delete('/book/:title', (req, res) => {
+route.delete('/book/:title', (req, res) => {
     var title = req.params.title;
 
 
@@ -140,7 +138,7 @@ app.delete('/book/:title', (req, res) => {
 });
 
 
-app.post('/addBooks', (req, res) => {
+route.post('/addBooks', (req, res) => {
     var book = req.body.book;
     const {
         error
@@ -170,7 +168,7 @@ app.post('/addBooks', (req, res) => {
 
     }
     returnedBook = addBook(book);
-    console.log(returnedBook);
+   
 
     if (!returnedBook)
     {
@@ -178,12 +176,18 @@ app.post('/addBooks', (req, res) => {
         return res.status(400).send(response);
 
     }
-    response = {status: 200,message: " book is added"};
+    if (returnedBook)
+    {
+        console.log(returnedBook);
+        response = {status: 200,message: /*" book is added"+*/returnedBook};
 
-    return res.status(200).send(response);
+        return res.status(200).send(response);
+
+    }
+    
 });
 
-app.patch('/updateBook/:id', (req, res) => {
+route.patch('/:id', (req, res) => {
     var id = req.params.id;
    
     if(!validate(id))
@@ -234,10 +238,13 @@ app.patch('/updateBook/:id', (req, res) => {
     
   });
   
-app.listen(port, () => {
-    console.log(`Started up at port ${port}`);
-});
+  if(!module.parent) {
+    app.listen(port, () => {
+        console.log(`Started up at port ${port}`);
+    });
+ }
+
 
 module.exports = {
-    app
+    route
 };

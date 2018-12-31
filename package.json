@@ -19,7 +19,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "mocha test/author.js",
+    "test": "mocha test/*.js",
     "test-watch": "nodemon --exec 'npm test'"
  
   },
