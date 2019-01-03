@@ -1,4 +1,6 @@
 const Joi = require('joi');
+let{checkDublicate}=require("./Duplication")
+
 var {
     sort,
     filter,
@@ -76,7 +78,10 @@ var addcategory = (category) => {
     
 
     var data = fetchData();
-   
+    var isDublicate = checkDublicate(data.categories, category);
+    if (isDublicate) {
+        return "exist category with the same name it's duplicate";
+    }
     data.categories.push(category);
     saveData(data)
     return category;

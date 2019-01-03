@@ -1,4 +1,6 @@
 const Joi = require('joi');
+
+let{checkDublicate}=require("./Duplication")
 var {
     sort,
     filter,
@@ -17,7 +19,7 @@ var validateAuthor = (author) => {
         name: Joi.string().min(5).required(),
         jobTitle: Joi.string().min(3).required(),
         bio: Joi.string().min(3).required(),
-       // id: Joi.string(),
+
 
     };
 
@@ -28,11 +30,11 @@ var validateAuthor = (author) => {
 
 // Get all authors
 var getAll = (options) => {
-    
+
     let sortedData = fetchData().authors;
-    if(options==null){
+    if (options == null) {
         return sortedData;
-      }
+    }
     if (options.sort) {
 
         sortedData = sort(sortedData, options.sort.type, options.sort.order);
@@ -52,7 +54,7 @@ var getAll = (options) => {
 
 
 
-    
+
 
 
 };
@@ -68,9 +70,9 @@ var getAuthor = (id) => {
 }
 
 
+
 // add author 
 var addAuthor = (author) => {
-    console.log(author);
     const {
         error
     } = validateAuthor(author);
@@ -80,6 +82,10 @@ var addAuthor = (author) => {
     author.id = uuidv4();
 
     var data = fetchData();
+    var isDublicate = checkDublicate(data.authors, author);
+    if (isDublicate) {
+        return "exist author with the same name it's duplicate";
+    }
     data.authors.push(author);
     saveData(data)
     return author;
@@ -114,7 +120,7 @@ var removeAuthor = (name) => {
     if (hasBook) return "can't delete this auther "
     var data = fetchData();
     var filteredauthors = data.authors.filter((author) => author.name !== name);
-    var checkLength=data.authors.length;
+    var checkLength = data.authors.length;
 
     if (data.authors.length == filteredauthors.length) {
         return 'no auther with this name'
@@ -145,9 +151,10 @@ var editAuthor = (id, newauthor) => {
 
 }
 
-exports.getAll=getAll;
-exports.getAuthor=getAuthor
-exports.editAuthor=editAuthor;
-exports.removeAuthor=removeAuthor;
-exports.addAuthor=addAuthor;
-exports.validateAuthor=validateAuthor;
+
+exports.getAll = getAll;
+exports.getAuthor = getAuthor
+exports.editAuthor = editAuthor;
+exports.removeAuthor = removeAuthor;
+exports.addAuthor = addAuthor;
+exports.validateAuthor = validateAuthor;

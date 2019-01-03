@@ -1,4 +1,4 @@
-//var validateBook =require('../models/book')
+let {checkBookDublicate}= require("./Duplication")
 const Joi = require('joi');
 var {
   sort,
@@ -86,10 +86,12 @@ var addBook = (book) => {
 
   var data = fetchData();
   
- 
+  var isDublicate = checkBookDublicate(data.books, book);
+  if (isDublicate) {
+      return "exist book with the same name it's duplicate";
+  }
   data.books.push(book);
   saveData(data);
-  console.log(book);
   return book;
   
 
