@@ -1,5 +1,8 @@
 const express = require('express');
 var validate = require('uuid-validate');
+var logger = require("../loggerFile")
+const moment = require('moment');
+
 
 var route = express.Router();
 var {
@@ -8,7 +11,8 @@ var {
     editAuthor,
     removeAuthor,
     addAuthor,
-    validateAuthor
+    validateAuthor,
+    getAuthorByname
 } = require('../db-Query/auther')
 let response = require('../errorObj');
 
@@ -42,6 +46,11 @@ route.post('/', (req, res) => {
             status: 404,
             message: error
         }
+        logger.log({
+            level: 'error',
+            message: 'error in get data' + error,
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
         return res.status(404).send(response);
     }
 });
@@ -53,6 +62,11 @@ route.get('/:id', (req, res) => {
             status: 404,
             message: "Must insert id of author"
         }
+        logger.log({
+            level: 'error',
+            message: 'did not insert id',
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
         res.send(response);
 
 
@@ -63,6 +77,11 @@ route.get('/:id', (req, res) => {
             status: 400,
             message: 'id not valid'
         }
+        logger.log({
+            level: 'error',
+            message: 'id not valid',
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
         res.status(400).send(response);
 
     }
@@ -73,6 +92,11 @@ route.get('/:id', (req, res) => {
                 status: 200,
                 message: "no data with this id"
             }
+            logger.log({
+                level: 'info',
+                message: 'The authors with the given ID was not found.',
+                date: moment().format('DD-MM-YYYY HH:mm:ss')
+            });
             return res.send(response);
 
         } else {
@@ -80,7 +104,8 @@ route.get('/:id', (req, res) => {
                 status: 200,
                 message: author
             }
-           return  res.send(response);
+
+            return res.send(response);
 
         }
 
@@ -92,6 +117,11 @@ route.get('/:id', (req, res) => {
             status: 404,
             message: error
         }
+        logger.log({
+            level: 'error',
+            message: error,
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
         return res.status(404).send(response);
 
     }
@@ -110,8 +140,7 @@ route.delete('/author/:name', (req, res) => {
         }
         var result = removeAuthor(name);
 
-        if (result == true)
-        {
+        if (result == true) {
             response = {
                 status: 200,
                 message: "author is deleted sucsessfuly"
@@ -120,40 +149,57 @@ route.delete('/author/:name', (req, res) => {
 
         }
 
-        if (result == 'no author with this name')
-        {
+        if (result == 'no author with this name') {
             response = {
-            status: 200,
-            message: "no author with this name"
-           }
+                status: 200,
+                message: "no author with this name"
+            }
+            logger.log({
+                level: 'info',
+                message: "no author with this name",
+                date: moment().format('DD-MM-YYYY HH:mm:ss')
+            });
             return res.status(200).send(response);
         }
-            
-        if (result === "can't delete this auther ")
-        {  
+
+        if (result === "can't delete this auther ") {
             response = {
                 status: 200,
                 message: "can't delete this auther he has abook"
             }
+            logger.log({
+                level: 'info',
+                message: "can't delete this auther he has abook",
+                date: moment().format('DD-MM-YYYY HH:mm:ss')
+            });
             return res.status(200).send(response);
 
-        }
-        else{
+        } else {
             response = {
                 status: 400,
-                message:"author deleted is failed"
+                message: "author deleted is failed"
             }
-                return res.status(400).send(response);
+            logger.log({
+                level: 'error',
+                message: "author deleted is failed",
+                date: moment().format('DD-MM-YYYY HH:mm:ss')
+            });
+            return res.status(400).send(response);
         }
-       
+
 
     } catch (error) {
         response = {
             status: 400,
             message: error
         }
+        logger.log({
+            level: 'error',
+            message: error,
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
         return res.status(400).send(response);
-       
+
 
     }
 
@@ -170,23 +216,45 @@ route.post('/addAuthor', (req, res) => {
             status: 400,
             message: error.details
         }
+        logger.log({
+            level: 'error',
+            message: error.details
+        });
         return res.status(400).send(response);
 
     }
     returnedauthor = addAuthor(author);
+    if (returnedauthor == "exist author with the same name it's duplicate") {
+        response = {
+            status: 200,
+            message: "exist author with the same name it's duplicate"
+        }
+        logger.log({
+            level: 'info',
+            message: "exist author with the same name it's duplicate",
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
 
+
+        });
+        return res.status(200).send(response);
+    }
     if (!returnedauthor) {
         response = {
             status: 400,
             message: "author added is failed "
         }
+        logger.log({
+            level: 'error',
+            message: "author added is failed ",
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
         return res.status(400).send(response);
     }
     response = {
         status: 200,
-        message: returnedauthor
+        message: "added sucessfully"
     }
-    return res.status(200).send(returnedauthor);
+    return res.status(200).send(response);
 
 
 });
@@ -199,6 +267,10 @@ route.patch('/updateAuthor/:id', (req, res) => {
             status: 400,
             message: 'id not valid'
         }
+        logger.log({
+            level: 'error',
+            message: 'id not valid'
+        });
         return res.status(400).send('id not valid');
 
     }
@@ -219,6 +291,10 @@ route.patch('/updateAuthor/:id', (req, res) => {
             status: 400,
             message: error.details
         }
+        logger.log({
+            level: 'error',
+            message: error.details
+        });
         return res.status(400).send(error.details);
 
     }
@@ -226,17 +302,26 @@ route.patch('/updateAuthor/:id', (req, res) => {
     if (!editedAuthor) {
         response = {
             status: 200,
-            message: "no auther with this id"
-        }
-        return res.status(404).send(response);
+            message: "can't edit author"
+        };
+        logger.log({
+            level: 'info',
+            message: "can't edit author"
+        });
+        return res.status(200).send(response);
 
     }
     if (editedAuthor == 'The Author with the given ID was not found.') {
         response = {
             status: 200,
-            message: error.details
-        }
-        return res.status(400).send(response);
+            message: 'The Author with the given ID was not found.'
+        };
+        logger.log({
+            level: 'info',
+            message: 'The Author with the given ID was not found.',
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
+        return res.status(200).send(response);
 
     }
     response = {
@@ -246,7 +331,65 @@ route.patch('/updateAuthor/:id', (req, res) => {
     return res.status(200).send(response);
 });
 
+route.post('/author', (req, res) => {
+    //var name = req.params.name;
+    var name = req.body.name;
 
+    if (!name) {
+        response = {
+            status: 404,
+            message: "Must insert name of author"
+        }
+        logger.log({
+            level: 'error',
+            message: 'did not insert name',
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
+        res.send(response);
+
+
+    }
+
+    try {
+        var author = getAuthorByname(name);
+        if (author == 'The authors with the given name was not found.') {
+            response = {
+                status: 200,
+                message: "no data with this name"
+            }
+            logger.log({
+                level: 'info',
+                message: 'The authors with the given name was not found.',
+                date: moment().format('DD-MM-YYYY HH:mm:ss')
+            });
+            return res.send(response);
+
+        } else {
+            response = {
+                status: 200,
+                message: author.id
+            }
+
+            return res.send(response);
+
+        }
+
+
+
+    } catch (error) {
+        response = {
+            status: 404,
+            message: error
+        }
+        logger.log({
+            level: 'error',
+            message: error,
+            date: moment().format('DD-MM-YYYY HH:mm:ss')
+        });
+        return res.status(404).send(response);
+
+    }
+});
 module.exports = {
     route
 };
