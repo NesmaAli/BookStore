@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-var validate = require('uuid-validate');
 const port = process.env.PORT || 3000;
 var app = express();
 let categoryRoute=require('./route/category');

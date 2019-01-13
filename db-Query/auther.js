@@ -69,6 +69,17 @@ var getAuthor = (id) => {
 
 }
 
+// get by name
+var getAuthorByname = (name) => {
+    var authors = fetchData().authors;
+
+    const author = authors.find(c => c.name === name);
+    if (!author) return 'The authors with the given name was not found.';
+    else
+        return author;
+
+}
+
 
 
 // add author 
@@ -158,3 +169,4 @@ exports.editAuthor = editAuthor;
 exports.removeAuthor = removeAuthor;
 exports.addAuthor = addAuthor;
 exports.validateAuthor = validateAuthor;
+exports.getAuthorByname=getAuthorByname;

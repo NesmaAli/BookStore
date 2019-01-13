@@ -18,7 +18,6 @@ const uuidv4 = require('uuid/v4');
 var validateCategory = (category) => {
     const schema = {
         name: Joi.string().min(5).required(),
-        //id: Joi.string().required(),
 
     };
 
@@ -63,8 +62,16 @@ var getcategory = (id) => {
         return category;
 
 }
+// get by name
+var getcategoryByname = (name) => {
+    var categories = fetchData().categories;
 
+    const category = categories.find(c => c.name === name);
+    if (!category) return 'The category with the given name was not found.';
+    else
+        return category;
 
+}
 // add category 
 var addcategory = (category) => {
     const {
@@ -158,3 +165,4 @@ exports.editcategory=editcategory;
 exports.removecategory=removecategory;
 exports.addcategory=addcategory;
 exports.validateCategory=validateCategory;
+exports.getcategoryByname=getcategoryByname;
